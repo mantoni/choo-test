@@ -1,0 +1,31 @@
+{
+  "name": "choo-test",
+  "version": "0.0.0",
+  "description": "Test your choo app with ease",
+  "main": "lib/choo-test.js",
+  "browserify": {
+    "transform": [
+      "es2020"
+    ]
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "posttest": "npm run lint",
+    "test": "mochify",
+    "watch": "mochify --watch"
+  },
+  "keywords": ["choo", "test"],
+  "author": "Maximilian Antoni <mail@maxantoni.de> (http://maxantoni.de/)",
+  "license": "MIT",
+  "dependencies": {
+    "es2020": "^1.1.7",
+    "sinon": "^1.17.4"
+  },
+  "peerDependencies": {
+    "choo": "^3.0.2"
+  },
+  "devDependencies": {
+    "eslint": "^3.0.1",
+    "mochify": "^2.18.0"
+  }
+}
