@@ -40,6 +40,11 @@ describe('choo-app', () => {
 });
 ```
 
+The main view is rendered into a temporary `div` element. DOM items can be
+queried using `app.$('h1')`. Choo defers some operations like rendering a view.
+To allow synchronous tests the Sinon fake timers are always installed. A fake
+server allows to test code branches that involve XHR calls.
+
 ## API
 
 - `app = choo_test()` creates and returns a test Choo app.
