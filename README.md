@@ -70,4 +70,4 @@ MIT
 [Sinon sandbox]: http://sinonjs.org/docs/#sandbox
 [Sinon fake server]: http://sinonjs.org/docs/#fakeServer
 [Sinon fake clock]: http://sinonjs.org/docs/#clock
-[bean]: https://github.com/fat/bean#fireelement-eventtype-args-
+[bean.fire]: https://github.com/fat/bean#fireelement-eventtype-args-
