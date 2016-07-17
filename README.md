@@ -60,6 +60,10 @@ server allows to test code branches that involve XHR calls.
 - `app.onError` the stub passed to choo as the `onError` handler.
 - `app.restore` restores the sandbox.
 
+## License
+
+MIT
+
 [Choo]: https://github.com/yoshuawuyts/choo
 [Sinon]: http://sinonjs.org
 [Mochify]: https://github.com/mantoni/mochify.js
