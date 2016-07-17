@@ -51,9 +51,13 @@ server allows to test code branches that involve XHR calls.
 - `app.start()` a wrapper for `choo.start()` which appends the tree to a `div`
   element.
 - `app.$(selector)` find a DOM element using `querySelector`.
+- `app.fire(selector, event[, args])` fires an event using [bean.fire][].
 - `app.sandbox` the [Sinon sandbox][].
 - `app.server` the [Sinon fake server][].
 - `app.clock` the [Sinon fake clock][].
+- `app.onAction` the stub passed to choo as the `onAction` handler.
+- `app.onStateChange` the stub passed to choo as the `onStateChange` handler.
+- `app.onError` the stub passed to choo as the `onError` handler.
 - `app.restore` restores the sandbox.
 
 [Choo]: https://github.com/yoshuawuyts/choo
@@ -62,3 +66,4 @@ server allows to test code branches that involve XHR calls.
 [Sinon sandbox]: http://sinonjs.org/docs/#sandbox
 [Sinon fake server]: http://sinonjs.org/docs/#fakeServer
 [Sinon fake clock]: http://sinonjs.org/docs/#clock
+[bean]: https://github.com/fat/bean#fireelement-eventtype-args-

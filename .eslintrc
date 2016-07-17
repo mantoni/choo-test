@@ -17,7 +17,6 @@ rules:
     no-dupe-class-members: 2
     no-this-before-super: 2
     no-var: 2
-    object-shorthand: 2
     prefer-arrow-callback: 1
     prefer-const: 1
     prefer-spread: 2

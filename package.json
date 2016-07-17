@@ -14,10 +14,14 @@
     "test": "mochify",
     "watch": "mochify --watch"
   },
-  "keywords": ["choo", "test"],
+  "keywords": [
+    "choo",
+    "test"
+  ],
   "author": "Maximilian Antoni <mail@maxantoni.de> (http://maxantoni.de/)",
   "license": "MIT",
   "dependencies": {
+    "bean": "^1.0.15",
     "es2020": "^1.1.7",
     "sinon": "^1.17.4"
   },
