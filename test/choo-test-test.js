@@ -1,11 +1,10 @@
 /*eslint-env mocha*/
-'use strict';
-
+/*eslint-disable strict*/// bel uses Function.caller
 const assert = require('assert');
 const sinon = require('sinon');
+const choo_test = require('..');
 const html = require('choo/html');
 const http = require('choo/http');
-const choo_test = require('..');
 
 const default_router = (route) => [
   route('/', () => {
@@ -123,6 +122,24 @@ describe('choo-test', () => {
     sinon.assert.calledWith(app.onStateChange, null, sinon.match({
       hi: 'there'
     }), sinon.match.object, 'change', sinon.match.func);
+  });
+
+  it('invokes effect onload', () => {
+    const spy = sinon.spy();
+    app.model({
+      effects: {
+        init: spy
+      }
+    });
+
+    start((route) => [
+      route('/', (data, prev, send) => {
+        return html`<div onload=${() => send('init')}></div>`;
+      })
+    ]);
+    app.clock.tick(1);
+
+    sinon.assert.calledOnce(spy);
   });
 
 });
