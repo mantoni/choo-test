@@ -52,6 +52,7 @@ server allows to test code branches that involve XHR calls.
   element.
 - `app.$(selector)` find a DOM element using `querySelector`.
 - `app.fire(selector, event[, args])` fires an event using [bean.fire][].
+- `app.redraw()` causes pending DOM modifications to be applied.
 - `app.sandbox` the [Sinon sandbox][].
 - `app.server` the [Sinon fake server][].
 - `app.clock` the [Sinon fake clock][].

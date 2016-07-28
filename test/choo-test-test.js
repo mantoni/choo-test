@@ -137,9 +137,35 @@ describe('choo-test', () => {
         return html`<div onload=${() => send('init')}></div>`;
       })
     ]);
-    app.clock.tick(1);
 
     sinon.assert.calledOnce(spy);
+  });
+
+  it('yields to requestAnimationFrame on redraw', () => {
+    const spy = sinon.spy();
+    start();
+
+    window.requestAnimationFrame(spy);
+    app.redraw();
+
+    sinon.assert.calledOnce(spy);
+  });
+
+  it('initially redraws after onload', () => {
+    app.model({
+      state: { test: 'initial' },
+      reducers: {
+        init: () => ({ test: 'changed' })
+      }
+    });
+
+    start((route) => [
+      route('/', (data, prev, send) => {
+        return html`<div onload=${() => send('init')}>${data.test}</div>`;
+      })
+    ]);
+
+    assert.equal(app.$('div').textContent, 'changed');
   });
 
 });
