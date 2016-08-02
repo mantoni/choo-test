@@ -1,5 +1,9 @@
 # Changes
 
+## 0.0.4
+
+- Add support for `onload` handler on nested elements
+
 ## 0.0.3
 
 - Add `redraw()` and stub out `requestAnimationFrame`
