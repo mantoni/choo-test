@@ -124,7 +124,7 @@ describe('choo-test', () => {
     }), sinon.match.object, 'change', sinon.match.func);
   });
 
-  it('invokes effect onload', () => {
+  it('invokes effect onload on root element', () => {
     const spy = sinon.spy();
     app.model({
       effects: {
@@ -135,6 +135,23 @@ describe('choo-test', () => {
     start((route) => [
       route('/', (data, prev, send) => {
         return html`<div onload=${() => send('init')}></div>`;
+      })
+    ]);
+
+    sinon.assert.calledOnce(spy);
+  });
+
+  it('invokes effect onload on nested element', () => {
+    const spy = sinon.spy();
+    app.model({
+      effects: {
+        init: spy
+      }
+    });
+
+    start((route) => [
+      route('/', (data, prev, send) => {
+        return html`<div><b onload=${() => send('init')}></b></div>`;
       })
     ]);
 
