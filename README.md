@@ -51,6 +51,7 @@ server allows to test code branches that involve XHR calls.
 - `app.start()` a wrapper for `choo.start()` which appends the tree to a `div`
   element.
 - `app.$(selector)` find a DOM element using `querySelector`.
+- `app.$$(selector)` find a DOM element using `querySelectorAll`.
 - `app.fire(selector, event[, args])` fires an event using [bean.fire][].
 - `app.redraw()` causes pending DOM modifications to be applied.
 - `app.sandbox` the [Sinon sandbox][].

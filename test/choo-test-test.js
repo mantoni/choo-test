@@ -35,6 +35,14 @@ describe('choo-test', () => {
     assert.equal(b.textContent, 'Test');
   });
 
+  it('allows to query multiple elements with $$', () => {
+    start();
+    const b = app.$$('button');
+
+    assert.equal(b.length, 1);
+    assert.equal(b[0].textContent, 'Test');
+  });
+
   it('exposes sandbox', () => {
     start();
 
