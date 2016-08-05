@@ -1,5 +1,9 @@
 # Changes
 
+## 0.0.5
+
+- Add `$$` for `querySelectorAll`
+
 ## 0.0.4
 
 - Add support for `onload` handler on nested elements
