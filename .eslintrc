@@ -19,7 +19,6 @@ rules:
     no-var: 2
     prefer-arrow-callback: 1
     prefer-const: 1
-    prefer-spread: 2
     prefer-template: 2
 
     array-bracket-spacing: [2, "never"]

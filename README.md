@@ -1,75 +1,112 @@
 # Choo Test
 
-Easy [Choo][] testing with [Sinon][].
+Easy [Choo][] testing.
 
 ## Install
 
-```
+```bash
 $ npm install choo-test --save-dev
 ```
 
 ## Usage
 
-This example would require [Mochify][], but any test framework that runs
-headless or in a real browser should work.
+Here is an example using [Mochify][] as the test runner:
 
 ```js
-const choo_test = require('choo-test');
 const assert = require('assert');
-const my_view = require('../lib/my-view');
+const choo = require('choo');
+const html = require('choo/html');
+const test = require('choo-test');
 
 describe('choo-app', () => {
+  let tester;
   let app;
 
   beforeEach(() => {
-    app = choo_test();
-    app.router((route) => [route('/', my_view)]);
-    app.start();
+    app = choo();
+    app.model({
+      state: { text: 'Test' },
+      reducers: {
+        change: () => ({ text: 'Changed' })
+      }
+    });
+    app.router(['/', (state, prev, send) =>
+      html`<button onclick=${() => send('change')}>${state.text}</button>`
+    ]);
+    tester = test.createTester(app);
   });
 
   afterEach(() => {
-    app.restore();
+    tester.stop();
   });
 
-  it('renders the view', () => {
-    const b = app.$('h1');
+  it('changes the button text on click', (done) => {
+    app.start();
 
-    assert.equal(b.className, 'chugga-chugga-choo-choo');
+    tester.fire('button', 'click');
+
+    tester.onRender(() => {
+      assert.equal(test.$('button').innerText, 'Changed');
+      done();
+    });
   });
 
 });
 ```
 
-The main view is rendered into a temporary `div` element. DOM items can be
-queried using `app.$('h1')`. Choo defers some operations like rendering a view.
-To allow synchronous tests the Sinon fake timers are always installed. A fake
-server allows to test code branches that involve XHR calls.
+## How does it work?
+
+When you create a `tester` instance for a Choo app, it registers [hooks][] with
+the application to intercept state changes and action calls. It also wraps the
+Choo `start` function and appends the application to a `div` tag in the
+`document.body`. When calling `stop` on the `tester`, the DOM node is removed.
+
+The `onRender` function creates a [MutationObserver][] and invokes the given
+callback if any change in the DOM tree happens.
 
 ## API
 
-- `app = choo_test()` creates and returns a test Choo app.
-- `app.start()` a wrapper for `choo.start()` which appends the tree to a `div`
-  element.
-- `app.$(selector)` find a DOM element using `querySelector`.
-- `app.$$(selector)` find a DOM element using `querySelectorAll`.
-- `app.fire(selector, event[, args])` fires an event using [bean.fire][].
-- `app.redraw()` causes pending DOM modifications to be applied.
-- `app.sandbox` the [Sinon sandbox][].
-- `app.server` the [Sinon fake server][].
-- `app.clock` the [Sinon fake clock][].
-- `app.onAction` the stub passed to choo as the `onAction` handler.
-- `app.onStateChange` the stub passed to choo as the `onStateChange` handler.
-- `app.onError` the stub passed to choo as the `onError` handler.
-- `app.restore` restores the sandbox.
+- `$(selector)`: Find a DOM element using `querySelector`.
+- `$$(selector)`: Find a DOM element using `querySelectorAll`.
+- `fire(selector, event[, args])`: Fire an event using [bean.fire][].
+- `tester = createTester(app)` creates a tester for the given Choo app.
+
+A `tester` instance has this interface:
+
+- `set([namespace, ]key, value)`: Override initial values in the Choo model.
+- `onRender([nodeOrSelector, ]fn)`: Register a function to invoke after the
+  next DOM mutation occurred. If only a function is given, the entire
+  `document` is observed. If no mutation occurs within 1500 ms, a timeout error
+  is thrown.
+- `onAction(fn)`: Register a function to invoke after the next Choo action
+  call. All [Choo onAction hook][hooks] parameters are forwarded.
+- `onStateChange(fn)`: Register a function to invoke after the next Choo state
+  change. All [Choo onStateChange hook][hooks] parameters are forwarded.
+- `onError(fn)`: Register a function to invoke after the next error occurred.
+  All [Choo onError hook][hooks] parameters are forwarded.
+- `stop()`: Stops the Choo app and removes the test DOM node from the body.
+
+## Testing XHR
+
+Use the [Sinon.js fake server][sinon-fake-server] for XHR testing. If you're
+using the [xhr][] library, you have to initialize the `XMLHttpRequest`
+implementation like this:
+
+```js
+sandbox = sinon.sandbox.create({
+  useFakeServer: true
+});
+sandbox.stub(xhr, 'XMLHttpRequest', sandbox.server.xhr);
+```
 
 ## License
 
 MIT
 
 [Choo]: https://github.com/yoshuawuyts/choo
-[Sinon]: http://sinonjs.org
 [Mochify]: https://github.com/mantoni/mochify.js
-[Sinon sandbox]: http://sinonjs.org/docs/#sandbox
-[Sinon fake server]: http://sinonjs.org/docs/#fakeServer
-[Sinon fake clock]: http://sinonjs.org/docs/#clock
 [bean.fire]: https://github.com/fat/bean#fireelement-eventtype-args-
+[hooks]: https://github.com/yoshuawuyts/choo#appusehooks
+[MutationObserver]: https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver
+[sinon-fake-server]: http://sinonjs.org/docs/#fakeServer
+[xhr]: https://www.npmjs.com/package/xhr

@@ -1,196 +1,154 @@
 /*eslint-env mocha*/
-/*eslint-disable strict*/// bel uses Function.caller
-const assert = require('assert');
-const sinon = require('sinon');
-const choo_test = require('..');
-const html = require('choo/html');
-const http = require('choo/http');
+'use strict';
 
-const default_router = (route) => [
-  route('/', () => {
-    return html`<button>Test</button>`;
-  })
-];
+const assert = require('assert');
+const choo = require('choo');
+const html = require('choo/html');
+const bean = require('bean');
+const test = require('..');
 
 describe('choo-test', () => {
   let app;
+  let tester;
 
   beforeEach(() => {
-    app = choo_test();
+    app = choo();
+    app.model({
+      state: { text: 'Test' },
+      reducers: {
+        change: () => ({ text: 'Changed' })
+      }
+    });
+    app.router(['/', (state, prev, send) =>
+      html`<button onclick=${() => send('change')}>${state.text}</button>`
+    ]);
+    tester = test.createTester(app);
   });
 
   afterEach(() => {
-    app.restore();
+    tester.stop();
   });
 
-  function start(router) {
-    app.router(router || default_router);
+  it('tracks changes in document', (done) => {
     app.start();
-  }
 
-  it('allows to query element with $', () => {
-    start();
-    const b = app.$('button');
+    test.fire('button', 'click');
 
-    assert.equal(b.textContent, 'Test');
-  });
-
-  it('allows to query multiple elements with $$', () => {
-    start();
-    const b = app.$$('button');
-
-    assert.equal(b.length, 1);
-    assert.equal(b[0].textContent, 'Test');
-  });
-
-  it('exposes sandbox', () => {
-    start();
-
-    assert.equal(typeof app.sandbox.stub, 'function');
-  });
-
-  it('exposes clock', () => {
-    start();
-
-    assert.equal(typeof app.clock.tick, 'function');
-  });
-
-  it('exposes server', () => {
-    start();
-
-    assert.equal(typeof app.server.respondWith, 'function');
-    assert.equal(typeof app.server.respond, 'function');
-  });
-
-  it('makes choo/http requests against fake server', () => {
-    start();
-
-    http.get('/some/url', () => {});
-
-    assert.equal(app.server.requests.length, 1);
-  });
-
-  it('invokes onAction when send is called', () => {
-    app.model({
-      effects: {
-        someAction: (data, state, send, _done) => {}
-      }
+    tester.onRender(() => {
+      assert.equal(test.$('button').innerText, 'Changed');
+      done();
     });
-    start((route) => [
-      route('/', (data, prev, send) => {
-        return html`<button onclick=${() => send('someAction')}>Test</button>`;
-      })
-    ]);
-
-    app.fire('button', 'click');
-
-    sinon.assert.calledOnce(app.onAction);
-    sinon.assert.calledWith(app.onAction, null, sinon.match.object,
-      'someAction', sinon.match.any, sinon.match.func);
   });
 
-  it('invokes onError if effect invokes done with error', () => {
-    const err = new Error();
-    app.model({
-      effects: {
-        throws: (data, state, send, done) => {
-          done(err);
-        }
-      }
+  it('tracks changes in given node', (done) => {
+    app.start();
+
+    test.fire('button', 'click');
+
+    tester.onRender(test.$('body'), () => {
+      assert.equal(test.$('button').innerText, 'Changed');
+      done();
     });
-    start((route) => [
-      route('/', (data, prev, send) => {
-        return html`<button onclick=${() => send('throws')}>Test</button>`;
-      })
-    ]);
-
-    app.fire('button', 'click');
-
-    sinon.assert.calledOnce(app.onError);
-    sinon.assert.calledWith(app.onError, err);
   });
 
-  it('invokes onStateChange if reducer changed the state', () => {
-    app.model({
-      reducers: {
-        change: () => {
-          return { hi: 'there' };
-        }
-      }
+  it('tracks changes in given selector', (done) => {
+    app.start();
+
+    test.fire('button', 'click');
+
+    tester.onRender('body', () => {
+      assert.equal(test.$('button').innerText, 'Changed');
+      done();
     });
-    start((route) => [
-      route('/', (data, prev, send) => {
-        return html`<button onclick=${() => send('change')}>Test</button>`;
-      })
-    ]);
-
-    app.fire('button', 'click');
-
-    sinon.assert.calledOnce(app.onStateChange);
-    sinon.assert.calledWith(app.onStateChange, null, sinon.match({
-      hi: 'there'
-    }), sinon.match.object, 'change', sinon.match.func);
   });
 
-  it('invokes effect onload on root element', () => {
-    const spy = sinon.spy();
-    app.model({
-      effects: {
-        init: spy
-      }
+  it('invokes onAction callback', (done) => {
+    app.start();
+
+    tester.onAction((state) => {
+      assert.equal(state.text, 'Test');
+      done();
     });
 
-    start((route) => [
-      route('/', (data, prev, send) => {
-        return html`<div onload=${() => send('init')}></div>`;
-      })
-    ]);
-
-    sinon.assert.calledOnce(spy);
+    test.fire('button', 'click');
   });
 
-  it('invokes effect onload on nested element', () => {
-    const spy = sinon.spy();
-    app.model({
-      effects: {
-        init: spy
-      }
+  it('invokes onStateChange callback', (done) => {
+    app.start();
+
+    tester.onStateChange((state) => {
+      assert.equal(state.text, 'Changed');
+      done();
     });
 
-    start((route) => [
-      route('/', (data, prev, send) => {
-        return html`<div><b onload=${() => send('init')}></b></div>`;
-      })
-    ]);
-
-    sinon.assert.calledOnce(spy);
+    test.fire('button', 'click');
   });
 
-  it('yields to requestAnimationFrame on redraw', () => {
-    const spy = sinon.spy();
-    start();
-
-    window.requestAnimationFrame(spy);
-    app.redraw();
-
-    sinon.assert.calledOnce(spy);
-  });
-
-  it('initially redraws after onload', () => {
+  it('invokes onError callback if reducer throws', (done) => {
+    const error = new Error();
     app.model({
-      state: { test: 'initial' },
-      reducers: {
-        init: () => ({ test: 'changed' })
-      }
+      subscriptions: [(send, done) => { done(error); }]
     });
 
-    start((route) => [
-      route('/', (data, prev, send) => {
-        return html`<div onload=${() => send('init')}>${data.test}</div>`;
-      })
-    ]);
+    tester.onError((err) => {
+      assert.strictEqual(err, error);
+      done();
+    });
 
-    assert.equal(app.$('div').textContent, 'changed');
+    app.start();
+  });
+
+  it('throws error if no onError callback was registered', () => {
+    app.model({
+      subscriptions: [(send, done) => { done(new Error('Ouch')); }]
+    });
+
+    assert.throws(() => {
+      app.start();
+    }, /Error: Ouch/);
+  });
+
+  it('does not throw in restore if app was not started', () => {
+    assert.doesNotThrow(() => {
+      tester.stop();
+    });
+  });
+
+  it('does not invoke action after stop', (done) => {
+    app.start();
+    tester.onAction(() => {
+      done(new Error('Unexpected'));
+    });
+    const button = test.$('button');
+
+    tester.stop();
+    bean.fire(button, 'click');
+
+    setTimeout(done, 5);
+  });
+
+  it('applies the given initial state', () => {
+    tester.set('text', 'Initial');
+
+    app.start();
+
+    assert.equal(test.$('button').innerText, 'Initial');
+  });
+
+  it('applies the given initial state with namespace', (done) => {
+    tester.set('ns', 'thing', 'Initial');
+    app.model({
+      namespace: 'ns',
+      state: { thing: 'Thingy', other: 'Unchanged' }
+    });
+    app.start();
+
+    tester.onStateChange((state) => {
+      assert.equal(state.ns.thing, 'Initial');
+      assert.equal(state.ns.other, 'Unchanged');
+      done();
+    });
+    test.fire('button', 'click');
   });
 
 });

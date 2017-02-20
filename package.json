@@ -26,13 +26,15 @@
   "license": "MIT",
   "dependencies": {
     "bean": "^1.0.15",
-    "choo": "^3.0.0",
-    "es2020": "^1.1.7",
-    "sinon": "^1.17.4"
+    "es2020": "^1.1.9"
+  },
+  "peerDependencies": {
+    "choo": "^4.1.0"
   },
   "devDependencies": {
-    "eslint": "^3.0.1",
-    "mochify": "^2.18.0"
+    "choo": "^4.1.0",
+    "eslint": "^3.14.1",
+    "mochify": "^2.18.1"
   },
   "repository": {
     "type": "git",
@@ -42,6 +44,5 @@
     "lib",
     "README.md",
     "LICENSE"
-  ],
-  "license": "MIT"
+  ]
 }
