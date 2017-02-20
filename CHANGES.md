@@ -1,5 +1,9 @@
 # Changes
 
+## 0.1.0
+
+- Rewrite
+
 ## 0.0.5
 
 - Add `$$` for `querySelectorAll`
