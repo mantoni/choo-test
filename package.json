@@ -16,7 +16,10 @@
     "lint": "eslint .",
     "posttest": "npm run lint",
     "test": "mochify",
-    "watch": "mochify --watch"
+    "watch": "mochify --watch",
+    "preversion": "npm test",
+    "version": "changes",
+    "postversion": "git push --follow-tags && npm publish"
   },
   "keywords": [
     "choo",
@@ -32,6 +35,7 @@
     "choo": "^4.1.0"
   },
   "devDependencies": {
+    "@studio/changes": "^1.1.0",
     "choo": "^4.1.0",
     "eslint": "^3.14.1",
     "mochify": "^2.18.1"
