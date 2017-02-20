@@ -1,5 +1,9 @@
 # Choo Test
 
+[![Choo v4]](https://github.com/yoshuawuyts/choo)
+[![SemVer]](http://semver.org)
+[![License]](https://github.com/mantoni/choo-test/blob/master/LICENSE)
+
 Easy [Choo][] testing.
 
 ## Install
@@ -103,6 +107,9 @@ sandbox.stub(xhr, 'XMLHttpRequest', sandbox.server.xhr);
 
 MIT
 
+[Choo v4]: https://img.shields.io/badge/built%20with%20choo-v4-ffc3e4.svg?style=flat-square
+[SemVer]: http://img.shields.io/:semver-%E2%9C%93-brightgreen.svg
+[License]: http://img.shields.io/npm/l/choo-test.svg
 [Choo]: https://github.com/yoshuawuyts/choo
 [Mochify]: https://github.com/mantoni/mochify.js
 [bean.fire]: https://github.com/fat/bean#fireelement-eventtype-args-
