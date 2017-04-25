@@ -1,154 +1,69 @@
 /*eslint-env mocha*/
 'use strict';
 
-const assert = require('assert');
-const choo = require('choo');
-const html = require('choo/html');
-const bean = require('bean');
-const test = require('..');
+var assert = require('assert');
+var choo = require('choo');
+var test = require('..');
 
-describe('choo-test', () => {
-  let app;
-  let tester;
+describe('choo-test', function () {
+  var app;
+  var restore;
 
-  beforeEach(() => {
+  beforeEach(function () {
     app = choo();
-    app.model({
-      state: { text: 'Test' },
-      reducers: {
-        change: () => ({ text: 'Changed' })
-      }
+    app.use(function (state, emitter) {
+      state.text = 'Test';
+      emitter.on('change', function () {
+        state.text = 'Changed';
+        emitter.emit('render');
+      });
     });
-    app.router(['/', (state, prev, send) =>
-      html`<button onclick=${() => send('change')}>${state.text}</button>`
-    ]);
-    tester = test.createTester(app);
+    app.route('/', function (state, emit) {
+      var button = document.createElement('button');
+      button.onclick = function () {
+        emit('change');
+      };
+      button.innerText = state.text;
+      return button;
+    });
   });
 
-  afterEach(() => {
-    tester.stop();
+  afterEach(function () {
+    restore();
+    restore = null;
   });
 
-  it('tracks changes in document', (done) => {
-    app.start();
+  it('tracks changes in document', function (done) {
+    restore = test.start(app);
 
     test.fire('button', 'click');
 
-    tester.onRender(() => {
+    test.onRender(function () {
       assert.equal(test.$('button').innerText, 'Changed');
       done();
     });
   });
 
-  it('tracks changes in given node', (done) => {
-    app.start();
+  it('tracks changes in given node', function (done) {
+    restore = test.start(app);
 
     test.fire('button', 'click');
 
-    tester.onRender(test.$('body'), () => {
+    test.onRender(test.$('body'), function () {
       assert.equal(test.$('button').innerText, 'Changed');
       done();
     });
   });
 
-  it('tracks changes in given selector', (done) => {
-    app.start();
+  it('tracks changes in given selector', function (done) {
+    restore = test.start(app);
 
     test.fire('button', 'click');
 
-    tester.onRender('body', () => {
+    test.onRender('body', function () {
       assert.equal(test.$('button').innerText, 'Changed');
       done();
     });
-  });
-
-  it('invokes onAction callback', (done) => {
-    app.start();
-
-    tester.onAction((state) => {
-      assert.equal(state.text, 'Test');
-      done();
-    });
-
-    test.fire('button', 'click');
-  });
-
-  it('invokes onStateChange callback', (done) => {
-    app.start();
-
-    tester.onStateChange((state) => {
-      assert.equal(state.text, 'Changed');
-      done();
-    });
-
-    test.fire('button', 'click');
-  });
-
-  it('invokes onError callback if reducer throws', (done) => {
-    const error = new Error();
-    app.model({
-      subscriptions: [(send, done) => { done(error); }]
-    });
-
-    tester.onError((err) => {
-      assert.strictEqual(err, error);
-      done();
-    });
-
-    app.start();
-  });
-
-  it('throws error if no onError callback was registered', () => {
-    app.model({
-      subscriptions: [(send, done) => { done(new Error('Ouch')); }]
-    });
-
-    assert.throws(() => {
-      app.start();
-    }, /Error: Ouch/);
-  });
-
-  it('does not throw in restore if app was not started', () => {
-    assert.doesNotThrow(() => {
-      tester.stop();
-    });
-  });
-
-  it('does not invoke action after stop', (done) => {
-    app.start();
-    tester.onAction(() => {
-      done(new Error('Unexpected'));
-    });
-    const button = test.$('button');
-
-    tester.stop();
-    bean.fire(button, 'click');
-
-    setTimeout(done, 5);
-  });
-
-  it('applies the given initial state', () => {
-    tester.set('text', 'Initial');
-
-    app.start();
-
-    assert.equal(test.$('button').innerText, 'Initial');
-  });
-
-  it('applies the given initial state with namespace', (done) => {
-    tester.set('ns', 'thing', 'Initial');
-    app.model({
-      namespace: 'ns',
-      state: { thing: 'Thingy', other: 'Unchanged' }
-    });
-    app.start();
-
-    tester.onStateChange((state) => {
-      assert.equal(state.ns.thing, 'Initial');
-      assert.equal(state.ns.other, 'Unchanged');
-      done();
-    });
-    test.fire('button', 'click');
   });
 
 });

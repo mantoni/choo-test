@@ -1,6 +1,6 @@
 # Choo Test
 
-[![Choo v4]](https://github.com/yoshuawuyts/choo)
+[![Choo v5]](https://github.com/yoshuawuyts/choo)
 [![SemVer]](http://semver.org)
 [![License]](https://github.com/mantoni/choo-test/blob/master/LICENSE)
 
@@ -17,39 +17,47 @@ $ npm install choo-test --save-dev
 Here is an example using [Mochify][] as the test runner:
 
 ```js
-const assert = require('assert');
-const choo = require('choo');
-const html = require('choo/html');
-const test = require('choo-test');
+var assert = require('assert');
+var choo = require('choo');
+var html = require('choo/html');
+var test = require('choo-test');
 
-describe('choo-app', () => {
-  let tester;
-  let app;
+function model(state, bus) {
+  state.text = 'Test';
 
-  beforeEach(() => {
+  bus.on('change', () => {
+    state.text = 'Changed';
+    bus.emit('render');
+  });
+}
+
+function view(state, emit) {
+  return html`<button onclick=${function () {
+    emit('change');
+  }}>${state.text}</button>`;
+  
+}
+
+describe('choo-app', function () {
+  var restore;
+  var app;
+
+  beforeEach(function () {
     app = choo();
-    app.model({
-      state: { text: 'Test' },
-      reducers: {
-        change: () => ({ text: 'Changed' })
-      }
-    });
-    app.router(['/', (state, prev, send) =>
-      html`<button onclick=${() => send('change')}>${state.text}</button>`
-    ]);
-    tester = test.createTester(app);
+    app.use(model);
+    app.route('/', view);
   });
 
-  afterEach(() => {
-    tester.stop();
+  afterEach(function () {
+    restore();
   });
 
-  it('changes the button text on click', (done) => {
-    app.start();
+  it('changes the button text on click', function (done) {
+    restore = test.start(app);
 
-    tester.fire('button', 'click');
+    test.fire('button', 'click');
 
-    tester.onRender(() => {
+    test.onRender(function () {
       assert.equal(test.$('button').innerText, 'Changed');
       done();
     });
@@ -60,10 +68,12 @@ describe('choo-app', () => {
 
 ## How does it work?
 
-When you create a `tester` instance for a Choo app, it registers [hooks][] with
-the application to intercept state changes and action calls. It also wraps the
-Choo `start` function and appends the application to a `div` tag in the
-`document.body`. When calling `stop` on the `tester`, the DOM node is removed.
+This module is a collection of helper functions. Each of them can be used
+separately.
+
+When you use the `start` function to start your Choo app, it wraps the appends
+the application to a `div` tag in the `document.body`. When calling returned
+`restore` function, the DOM node is removed.
 
 The `onRender` function creates a [MutationObserver][] and invokes the given
 callback if any change in the DOM tree happens.
@@ -73,22 +83,13 @@ callback if any change in the DOM tree happens.
 - `$(selector)`: Find a DOM element using `querySelector`.
 - `$$(selector)`: Find a DOM element using `querySelectorAll`.
 - `fire(selector, event[, args])`: Fire an event using [bean.fire][].
-- `tester = createTester(app)` creates a tester for the given Choo app.
-
-A `tester` instance has this interface:
-
-- `set([namespace, ]key, value)`: Override initial values in the Choo model.
 - `onRender([nodeOrSelector, ]fn)`: Register a function to invoke after the
   next DOM mutation occurred. If only a function is given, the entire
   `document` is observed. If no mutation occurs within 1500 ms, a timeout error
   is thrown.
-- `onAction(fn)`: Register a function to invoke after the next Choo action
-  call. All [Choo onAction hook][hooks] parameters are forwarded.
-- `onStateChange(fn)`: Register a function to invoke after the next Choo state
-  change. All [Choo onStateChange hook][hooks] parameters are forwarded.
-- `onError(fn)`: Register a function to invoke after the next error occurred.
-  All [Choo onError hook][hooks] parameters are forwarded.
-- `stop()`: Stops the Choo app and removes the test DOM node from the body.
+- `start(app)`: Creates a `div` tag and append it to `document.body`, then
+  starts the given Choo app and attaches the returned tree to the `div` node.
+  Returns a `restore()` function which remove the `div` node from the body.
 
 ## Testing XHR
 
@@ -113,7 +114,6 @@ MIT
 [Choo]: https://github.com/yoshuawuyts/choo
 [Mochify]: https://github.com/mantoni/mochify.js
 [bean.fire]: https://github.com/fat/bean#fireelement-eventtype-args-
-[hooks]: https://github.com/yoshuawuyts/choo#appusehooks
 [MutationObserver]: https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver
 [sinon-fake-server]: http://sinonjs.org/docs/#fakeServer
 [xhr]: https://www.npmjs.com/package/xhr

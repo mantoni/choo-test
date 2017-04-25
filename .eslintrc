@@ -8,19 +8,7 @@ env:
 extends: "eslint:recommended"
 
 rules:
-    # es6
-    arrow-spacing: 2
     keyword-spacing: 2
-    constructor-super: 2
-    no-class-assign: 2
-    no-const-assign: 2
-    no-dupe-class-members: 2
-    no-this-before-super: 2
-    no-var: 2
-    prefer-arrow-callback: 1
-    prefer-const: 1
-    prefer-template: 2
-
     array-bracket-spacing: [2, "never"]
     block-scoped-var: 2
     block-spacing: 2
