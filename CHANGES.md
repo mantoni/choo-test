@@ -1,5 +1,9 @@
 # Changes
 
+## 0.2.0
+
+- Choo v5
+
 ## 0.1.0
 
 - Rewrite
