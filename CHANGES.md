@@ -1,5 +1,9 @@
 # Changes
 
+## 0.3.0
+
+- Allow to pass a scope node to `$` and `$$`
+
 ## 0.2.0
 
 - Choo v5
