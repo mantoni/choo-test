@@ -80,8 +80,10 @@ callback if any change in the DOM tree happens.
 
 ## API
 
-- `$(selector)`: Find a DOM element using `querySelector`.
-- `$$(selector)`: Find a DOM element using `querySelectorAll`.
+- `$(selector[, scope])`: Find a DOM element using `querySelector`. `scope`
+  must be a DOM node to search and defaults to `document`.
+- `$$(selector[, scope])`: Find all DOM element using `querySelectorAll`.
+  `scope` must be a DOM node to search and defaults to `document`.
 - `fire(selector, event[, args])`: Fire an event using [bean.fire][].
 - `onRender([nodeOrSelector, ]fn)`: Register a function to invoke after the
   next DOM mutation occurred. If only a function is given, the entire
