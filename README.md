@@ -22,12 +22,12 @@ var choo = require('choo');
 var html = require('choo/html');
 var test = require('choo-test');
 
-function model(state, bus) {
+function model(state, emitter) {
   state.text = 'Test';
 
-  bus.on('change', () => {
+  emitter.on('change', () => {
     state.text = 'Changed';
-    bus.emit('render');
+    emitter.emit('render');
   });
 }
 
@@ -71,9 +71,9 @@ describe('choo-app', function () {
 This module is a collection of helper functions. Each of them can be used
 separately.
 
-When you use the `start` function to start your Choo app, it wraps the appends
-the application to a `div` tag in the `document.body`. When calling returned
-`restore` function, the DOM node is removed.
+When you use the `start` function to start your Choo app, it wraps and appends
+the application to a `div` tag in the `document.body`. When calling the
+returned `restore` function, the DOM node is removed again.
 
 The `onRender` function creates a [MutationObserver][] and invokes the given
 callback if any change in the DOM tree happens.
