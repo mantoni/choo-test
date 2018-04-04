@@ -26,13 +26,13 @@
     "bean": "^1.0.15"
   },
   "peerDependencies": {
-    "choo": "^5.3.0"
+    "choo": "^5.3.0 || ^6.0.0"
   },
   "devDependencies": {
     "@studio/changes": "^1.1.0",
-    "choo": "^5.3.0",
+    "choo": "^6.0.0",
     "eslint": "^3.14.1",
-    "mochify": "^3.1.1"
+    "mochify": "^5.6.0"
   },
   "repository": {
     "type": "git",
