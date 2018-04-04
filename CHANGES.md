@@ -1,5 +1,11 @@
 # Changes
 
+## 0.4.0
+
+- Improve stack if `onRender` callback throws
+- Improve example and description wording
+- Add choo v6 as `peerDependency`
+
 ## 0.3.0
 
 - Allow to pass a scope node to `$` and `$$`
