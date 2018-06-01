@@ -1,5 +1,9 @@
 # Changes
 
+## 0.5.0
+
+- Capture window listeners and unregister in `restore()`
+
 ## 0.4.0
 
 - Improve stack if `onRender` callback throws

@@ -1,6 +1,6 @@
 {
   "name": "choo-test",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Easy choo app unit testing",
   "main": "lib/choo-test.js",
   "homepage": "https://github.com/mantoni/choo-test.js",
