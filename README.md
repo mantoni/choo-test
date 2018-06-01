@@ -78,6 +78,8 @@ returned `restore` function, the DOM node is removed again.
 The `onRender` function creates a [MutationObserver][] and invokes the given
 callback if any change in the DOM tree happens.
 
+Global window events are captured and unregistered when calling `restore()`.
+
 ## API
 
 - `$(selector[, scope])`: Find a DOM element using `querySelector`. `scope`
