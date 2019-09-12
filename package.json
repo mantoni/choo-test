@@ -22,6 +22,12 @@
   ],
   "author": "Maximilian Antoni <mail@maxantoni.de> (http://maxantoni.de/)",
   "license": "MIT",
+  "eslintConfig": {
+    "extends": "@studio",
+    "env": {
+      "browser": true
+    }
+  },
   "dependencies": {
     "bean": "^1.0.15"
   },
@@ -30,6 +36,7 @@
   },
   "devDependencies": {
     "@studio/changes": "^1.7.0",
+    "@studio/eslint-config": "^1.0.2",
     "choo": "^7.0.0",
     "eslint": "^6.3.0",
     "mochify": "^6.4.1"

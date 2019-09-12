@@ -1,25 +1,25 @@
 /*eslint-env mocha*/
 'use strict';
 
-var assert = require('assert');
-var choo = require('choo');
-var test = require('..');
+const assert = require('assert');
+const choo = require('choo');
+const test = require('..');
 
-describe('choo-test', function () {
-  var app;
-  var restore;
+describe('choo-test', () => {
+  let app;
+  let restore;
 
-  beforeEach(function () {
+  beforeEach(() => {
     app = choo();
-    app.use(function (state, emitter) {
+    app.use((state, emitter) => {
       state.text = 'Test';
-      emitter.on('change', function () {
+      emitter.on('change', () => {
         state.text = 'Changed';
         emitter.emit('render');
       });
     });
-    app.route('/', function (state, emit) {
-      var button = document.createElement('button');
+    app.route('/', (state, emit) => {
+      const button = document.createElement('button');
       button.onclick = function () {
         emit('change');
       };
@@ -28,39 +28,39 @@ describe('choo-test', function () {
     });
   });
 
-  afterEach(function () {
+  afterEach(() => {
     restore();
     restore = null;
   });
 
-  it('tracks changes in document', function (done) {
+  it('tracks changes in document', (done) => {
     restore = test.start(app);
 
     test.fire('button', 'click');
 
-    test.onRender(function () {
+    test.onRender(() => {
       assert.equal(test.$('button').innerText, 'Changed');
       done();
     });
   });
 
-  it('tracks changes in given node', function (done) {
+  it('tracks changes in given node', (done) => {
     restore = test.start(app);
 
     test.fire('button', 'click');
 
-    test.onRender(test.$('body'), function () {
+    test.onRender(test.$('body'), () => {
       assert.equal(test.$('button').innerText, 'Changed');
       done();
     });
   });
 
-  it('tracks changes in given selector', function (done) {
+  it('tracks changes in given selector', (done) => {
     restore = test.start(app);
 
     test.fire('button', 'click');
 
-    test.onRender('body', function () {
+    test.onRender('body', () => {
       assert.equal(test.$('button').innerText, 'Changed');
       done();
     });
