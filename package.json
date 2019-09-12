@@ -32,7 +32,7 @@
     "@studio/changes": "^1.1.0",
     "choo": "^6.0.0",
     "eslint": "^3.14.1",
-    "mochify": "^5.6.0"
+    "mochify": "^6.4.1"
   },
   "repository": {
     "type": "git",
