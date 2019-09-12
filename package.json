@@ -13,7 +13,7 @@
     "test": "mochify",
     "watch": "mochify --watch",
     "preversion": "npm test",
-    "version": "changes",
+    "version": "changes --commits --footer",
     "postversion": "git push --follow-tags && npm publish"
   },
   "keywords": [
@@ -29,7 +29,7 @@
     "choo": "^5.3.0 || ^6.0.0 || ^7.0.0"
   },
   "devDependencies": {
-    "@studio/changes": "^1.1.0",
+    "@studio/changes": "^1.7.0",
     "choo": "^7.0.0",
     "eslint": "^3.14.1",
     "mochify": "^6.4.1"
