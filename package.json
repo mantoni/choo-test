@@ -31,7 +31,7 @@
   "devDependencies": {
     "@studio/changes": "^1.7.0",
     "choo": "^7.0.0",
-    "eslint": "^3.14.1",
+    "eslint": "^6.3.0",
     "mochify": "^6.4.1"
   },
   "repository": {
